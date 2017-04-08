@@ -5,12 +5,14 @@ let Rank = mongoose.model("Rank");
 
 /* GET users listing. */
 router.post('/sendScore', (req, res, next) => {
+
     // how to create a storage item
+    let request = req.body;
     let rank = new Rank({
-        deviceUuid: "deviceUuid1",
-        score: 113,
-        levelReached: 4,
-        timestamp: 1491644023
+        deviceUuid: request.deviceUuid,
+        score: request.score,
+        levelReached: request.levelReached,
+        timestamp: request.timestamp
     });
     rank.save((err, insertedItem) => {
         if (err) {
@@ -19,7 +21,7 @@ router.post('/sendScore', (req, res, next) => {
             return console.error(err);
         }
         console.log("New rank item inserted:", insertedItem);
-        res.send('new rank inserted');
+        res.send(insertedItem);
     });
 });
 

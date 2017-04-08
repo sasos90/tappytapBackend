@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var Rank = mongoose.model("Rank");
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/sendScore', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 

@@ -1,14 +1,14 @@
 /**
  * Created by saso on 10/14/16.
  */
-var mongoose = require("mongoose");
+let mongoose = require("mongoose");
 
 // Mongoose schemas
-var rankSchema = mongoose.Schema({
+let rankSchema = mongoose.Schema({
     deviceUuid: String,
     score: Number,
     levelReached: Number,
     timestamp: Number
-});
-var Rank = mongoose.model("Rank", rankSchema);
+}, { collection: "rankings" });
+let Rank = mongoose.model("Rank", rankSchema);
 module.exports = Rank;

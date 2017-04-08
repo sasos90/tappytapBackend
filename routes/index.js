@@ -1,11 +1,9 @@
-var express = require("express");
-var router = express.Router();
-var mongoose = require("mongoose");
-var Rank = mongoose.model("Rank");
+let express = require("express");
+let router = express.Router();
 
 /* GET home page. */
-router.get('/sendScore', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', (req, res, next) => {
+    res.render('index', { title: 'Express' });
 });
 
 module.exports = router;

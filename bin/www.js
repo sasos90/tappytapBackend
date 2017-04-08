@@ -4,9 +4,10 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('tappytapBackend:server');
-var http = require('http');
+var debug = require('debug')('tappytapBackend:server'),
+  db = require('../models/db'),
+  http = require('http'),
+  app = require('../app');
 
 /**
  * Get port from environment and store in Express.

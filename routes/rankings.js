@@ -64,7 +64,8 @@ router.post("/getRank", (req, res, next) => {
 });
 
 let requestValid = (request) => {
-    return md5(request.time + request.deviceUuid + request.level + request.name + request.score) === request.hash;
+    let SALT = "*k9[unD1LrQSQ2_";
+    return md5(request.time + request.deviceUuid + request.level + request.name + request.score + SALT) === request.hash;
 };
 
 module.exports = router;

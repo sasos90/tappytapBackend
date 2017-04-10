@@ -5,6 +5,7 @@ let mongoose = require("mongoose");
 
 // Mongoose schemas
 let rankSchema = mongoose.Schema({
+    name: String,
     deviceUuid: String,
     score: Number,
     levelReached: Number,

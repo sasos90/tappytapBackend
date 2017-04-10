@@ -3,7 +3,7 @@ let router = express.Router();
 let mongoose = require("mongoose");
 let Rank = mongoose.model("Rank");
 
-/* GET users listing. */
+/* POST submit score. */
 router.post("/sendScore", (req, res, next) => {
 
     // how to create a storage item
@@ -23,10 +23,21 @@ router.post("/sendScore", (req, res, next) => {
             });
             return console.error(err);
         }
-        console.log("New rank item inserted:", insertedItem);
         res.send({
             success: true
         });
+        console.log("New rank item inserted:", insertedItem);
+    });
+});
+
+/* POST get rank. */
+router.post("/getRank", (req, res, next) => {
+
+    // how to create a storage item
+    let deviceUuid = req.body.deviceUuid;
+
+    res.send({
+        rank: 198
     });
 });
 

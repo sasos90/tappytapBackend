@@ -24,26 +24,33 @@ router.post("/sendScore", (req, res, next) => {
 
     // how to create a storage item
     let request = req.body;
-    let rank = new Rank({
-        name: request.name,
-        deviceUuid: request.deviceUuid,
-        score: request.score,
-        levelReached: request.levelReached,
-        timestamp: request.timestamp
-    });
-    rank.save((err, insertedItem) => {
-        if (err) {
-            console.error("NOT INSERTED");
-            res.send({
-                success: false
-            });
-            return console.error(err);
-        }
-        res.send({
-            success: true
+    if (requestValid(request)) {
+        let rank = new Rank({
+            name: request.name,
+            deviceUuid: request.deviceUuid,
+            score: request.score,
+            levelReached: request.levelReached,
+            timestamp: request.timestamp
         });
-        console.log("New rank item inserted:", insertedItem);
-    });
+        rank.save((err, insertedItem) => {
+            if (err) {
+                console.error("NOT INSERTED");
+                res.send({
+                    success: false
+                });
+                return console.error(err);
+            }
+            res.send({
+                success: true
+            });
+            console.log("New rank item inserted:", insertedItem);
+        });
+    } else {
+        console.log("!!! Request is not valid! !!!");
+        res.send({
+            success: false
+        });
+    }
 });
 
 /* POST get rank. */
@@ -55,5 +62,10 @@ router.post("/getRank", (req, res, next) => {
         rank: 198
     });
 });
+
+let requestValid = (request) => {
+    // TODO: put that string to MD5
+    return request.time + request.deviceUuid + request.level + request.name + request.score;
+};
 
 module.exports = router;

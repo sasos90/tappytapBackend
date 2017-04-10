@@ -25,7 +25,8 @@ router.post("/sendScore", (req, res, next) => {
 
     // how to create a storage item
     let request = req.body;
-    if (requestValid(request)) {
+    // deviceUuid is null when accessing from browser
+    if (request.deviceUuid !== null && requestValid(request)) {
         let rank = new Rank({
             name: request.name,
             deviceUuid: request.deviceUuid,
@@ -58,8 +59,19 @@ router.post("/sendScore", (req, res, next) => {
 router.post("/getRank", (req, res, next) => {
 
     let deviceUuid = req.body.deviceUuid;
-    res.send({
-        rank: 198
+    Rank.count().where("deviceUuid").equals(deviceUuid).exec((err, rank) => {
+        if (err) {
+            res.send({
+                success: false
+            });
+            return console.error(err);
+        }
+
+        // rank can be zero, so we add + 1
+        res.send({
+            rank: rank + 1,
+            success: true
+        });
     });
 });
 

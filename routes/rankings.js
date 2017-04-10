@@ -2,6 +2,7 @@ let express = require("express");
 let router = express.Router();
 let mongoose = require("mongoose");
 let Rank = mongoose.model("Rank");
+let md5 = require("md5");
 
 router.use((req, res, next) => {
 
@@ -56,7 +57,6 @@ router.post("/sendScore", (req, res, next) => {
 /* POST get rank. */
 router.post("/getRank", (req, res, next) => {
 
-    // how to create a storage item
     let deviceUuid = req.body.deviceUuid;
     res.send({
         rank: 198
@@ -64,8 +64,7 @@ router.post("/getRank", (req, res, next) => {
 });
 
 let requestValid = (request) => {
-    // TODO: put that string to MD5
-    return request.time + request.deviceUuid + request.level + request.name + request.score;
+    return md5(request.time + request.deviceUuid + request.level + request.name + request.score) === request.hash;
 };
 
 module.exports = router;

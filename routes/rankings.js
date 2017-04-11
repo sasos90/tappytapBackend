@@ -34,7 +34,17 @@ router.post("/sendScore", (req, res, next) => {
             levelReached: request.levelReached,
             timestamp: request.timestamp
         });
-        rank.save((err, insertedItem) => {
+        // update the row with the same timestamp and device id
+        Rank.findOneAndUpdate({
+            deviceUuid: request.deviceUuid,
+            timestamp: request.timestamp
+        }, {
+            name: request.name,
+            score: request.score,
+            levelReached: request.levelReached,
+        }, {
+            upsert: true
+        }, (err, insertedItem) => {
             if (err) {
                 console.error("NOT INSERTED");
                 res.send({

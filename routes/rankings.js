@@ -35,6 +35,7 @@ router.post("/sendScore", (req, res, next) => {
             timestamp: request.time
         });
         // update the row with the same timestamp and device id
+        // TODO: check if score is better then the actual stored in the database.
         Rank.findOneAndUpdate({
             deviceUuid: request.deviceUuid,
             timestamp: request.time
@@ -43,7 +44,8 @@ router.post("/sendScore", (req, res, next) => {
             score: request.score,
             levelReached: request.levelReached,
         }, {
-            upsert: true
+            upsert: true,
+            new: true
         }, (err, insertedItem) => {
             if (err) {
                 console.error("NOT INSERTED");

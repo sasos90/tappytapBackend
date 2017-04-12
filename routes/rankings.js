@@ -86,10 +86,33 @@ router.post("/getRank", (req, res, next) => {
             let maxScore = rank[0].score;
 
             // get rank
+            Rank.aggregate([
+                {
+                    $match: {
+                        score: {
+                            $gt: maxScore
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$deviceUuid"/*,
+                        maxScore: {$max:"$score"}*/
+                    }
+                }
+            ], (err, list) => {
+                if (err) {
+                    res.send({
+                        success: false
+                    });
+                    return console.error(err);
+                }
 
-            res.send({
-                success: true,
-                rank: maxScore
+                // rank can be zero, so we add + 1
+                res.send({
+                    rank: list.length + 1,
+                    success: true
+                });
             });
         } else {
             res.send({
@@ -97,28 +120,6 @@ router.post("/getRank", (req, res, next) => {
             });
         }
     });
-
-    /*Rank.aggregate([
-        {
-            $group: {
-                _id: "$deviceUuid",
-                maxScore: {$max:"$score"}
-            }
-        }
-    ], (err, rank) => {
-        if (err) {
-            res.send({
-                success: false
-            });
-            return console.error(err);
-        }
-
-        // rank can be zero, so we add + 1
-        res.send({
-            rank: rank.length + 1,
-            success: true
-        });
-    });*/
 });
 
 let requestValid = (request) => {

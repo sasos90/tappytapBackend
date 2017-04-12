@@ -32,12 +32,12 @@ router.post("/sendScore", (req, res, next) => {
             deviceUuid: request.deviceUuid,
             score: request.score,
             levelReached: request.levelReached,
-            timestamp: request.timestamp
+            timestamp: request.time
         });
         // update the row with the same timestamp and device id
         Rank.findOneAndUpdate({
             deviceUuid: request.deviceUuid,
-            timestamp: request.timestamp
+            timestamp: request.time
         }, {
             name: request.name,
             score: request.score,
@@ -124,7 +124,7 @@ router.post("/getRank", (req, res, next) => {
 
 let requestValid = (request) => {
     let SALT = "*k9[unD1LrQSQ2_";
-    return md5(request.time + request.deviceUuid + request.level + request.name + request.score + SALT) === request.hash;
+    return md5(request.time + request.deviceUuid + request.levelReached + request.name + request.score + SALT) === request.hash;
 };
 
 module.exports = router;

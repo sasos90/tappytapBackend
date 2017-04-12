@@ -47,19 +47,19 @@ router.post("/sendScore", (req, res, next) => {
         }, (err, insertedItem) => {
             if (err) {
                 console.error("NOT INSERTED");
-                res.send({
+                res.json({
                     success: false
                 });
                 return console.error(err);
             }
-            res.send({
+            res.json({
                 success: true
             });
             console.log("New rank item inserted:", insertedItem);
         });
     } else {
         console.log("!!! Request is not valid! !!!");
-        res.send({
+        res.json({
             success: false
         });
     }
@@ -76,7 +76,7 @@ router.post("/getRank", (req, res, next) => {
         score: -1
     }).limit(1).exec((err, rank) => {
         if (err) {
-            res.send({
+            res.json({
                 success: false
             });
             return console.error(err);
@@ -102,20 +102,20 @@ router.post("/getRank", (req, res, next) => {
                 }
             ], (err, list) => {
                 if (err) {
-                    res.send({
+                    res.json({
                         success: false
                     });
                     return console.error(err);
                 }
 
                 // rank can be zero, so we add + 1
-                res.send({
+                res.json({
                     rank: list.length + 1,
                     success: true
                 });
             });
         } else {
-            res.send({
+            res.json({
                 success: false
             });
         }

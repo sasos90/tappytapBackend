@@ -63,7 +63,7 @@ router.post("/sendScore", (req, res, next) => {
                             return console.error(err);
                         }
 
-                        getRank(request.deviceUuid, (status) => {
+                        getRankForScore(deviceUuid, request.score, (status) => {
                             if (status.success) {
                                 res.json({
                                     success: true,
@@ -79,7 +79,7 @@ router.post("/sendScore", (req, res, next) => {
                     });
                 } else {
                     // not the best score of the day!
-                    getRank(request.deviceUuid, (status) => {
+                    getRankForScore(deviceUuid, request.score, (status) => {
                         if (status.success) {
                             res.json({
                                 success: true,
@@ -144,6 +144,7 @@ let getRank = (deviceUuid, callback) => {
     }).limit(1).exec((err, rank) => {
         if (err) {
             callback({ success: false });
+            console.log("Error occured on finding the max score!");
             return console.error(err);
         }
 
@@ -166,6 +167,7 @@ let getRank = (deviceUuid, callback) => {
                 }
             ], (err, list) => {
                 if (err) {
+                    console.log("Error occured on grouping the rankings when searching for rank!");
                     callback({ success: false });
                     return console.error(err);
                 }
@@ -177,8 +179,42 @@ let getRank = (deviceUuid, callback) => {
                 });
             });
         } else {
+            console.log("No rank for you yet!");
             callback({ success: false });
         }
+    });
+};
+
+let getRankForScore = (deviceUuid, score, callback) => {
+
+    // get rank
+    Rank.aggregate([
+        {
+            $match: {
+                score: {
+                    $gt: score
+                },
+                deviceUuid: {
+                    $ne: deviceUuid
+                }
+            }
+        },
+        {
+            $group: {
+                _id: "$deviceUuid"
+            }
+        }
+    ], (err, list) => {
+        if (err) {
+            callback({ success: false });
+            return console.error(err);
+        }
+
+        // rank can be zero, so we add + 1
+        callback({
+            success: true,
+            rank: list.length + 1
+        });
     });
 };
 

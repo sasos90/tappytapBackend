@@ -104,15 +104,28 @@ router.post("/getRank", (req, res, next) => {
 
     let deviceUuid = req.body.deviceUuid;
 
+    getRank(deviceUuid, (status) => {
+        if (status.success) {
+            res.json({
+                success: true,
+                rank: status.rank
+            });
+        } else {
+            res.json({
+                success: false
+            });
+        }
+    });
+});
+
+let getRank = (deviceUuid, callback) => {
     Rank.find({
         deviceUuid: deviceUuid
     }).sort({
         score: -1
     }).limit(1).exec((err, rank) => {
         if (err) {
-            res.json({
-                success: false
-            });
+            callback({ success: false });
             return console.error(err);
         }
 
@@ -130,31 +143,26 @@ router.post("/getRank", (req, res, next) => {
                 },
                 {
                     $group: {
-                        _id: "$deviceUuid"/*,
-                        maxScore: {$max:"$score"}*/
+                        _id: "$deviceUuid"
                     }
                 }
             ], (err, list) => {
                 if (err) {
-                    res.json({
-                        success: false
-                    });
+                    callback({ success: false });
                     return console.error(err);
                 }
 
                 // rank can be zero, so we add + 1
-                res.json({
-                    rank: list.length + 1,
-                    success: true
+                callback({
+                    success: true,
+                    rank: list.length + 1
                 });
             });
         } else {
-            res.json({
-                success: false
-            });
+            callback({ success: false });
         }
     });
-});
+};
 
 let requestValid = (request) => {
     let SALT = "*k9[unD1LrQSQ2_";

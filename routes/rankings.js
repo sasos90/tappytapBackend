@@ -51,7 +51,10 @@ router.post("/sendScore", (req, res, next) => {
             if (rankItem !== null) {
                 // update
                 if (request.score > rankItem.score) {
+                    // update data
                     rankItem.score = request.score;
+                    rankItem.levelReached = request.levelReached;
+
                     rankItem.save((err) => {
                         if (err) {
                             res.json({

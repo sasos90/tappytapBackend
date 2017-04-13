@@ -26,7 +26,7 @@ router.post("/sendScore", (req, res, next) => {
     // how to create a storage item
     let request = req.body;
     // deviceUuid is null when accessing from browser
-    if (request.deviceUuid !== null && requestValid(request)) {
+    // if (request.deviceUuid !== null && requestValid(request)) {
         let rank = new Rank({
             name: request.name,
             deviceUuid: request.deviceUuid,
@@ -36,35 +36,64 @@ router.post("/sendScore", (req, res, next) => {
         });
         // update the row with the same timestamp and device id
         // TODO: check if score is better then the actual stored in the database.
-        Rank.findOneAndUpdate({
+        Rank.findOne({
             deviceUuid: request.deviceUuid,
             timestamp: request.time
-        }, {
-            name: request.name,
-            score: request.score,
-            levelReached: request.levelReached,
-        }, {
-            upsert: true,
-            new: true
-        }, (err, insertedItem) => {
+        }, (err, rankItem) => {
             if (err) {
-                console.error("NOT INSERTED");
+                console.error("Error occured in finding the rank");
                 res.json({
                     success: false
                 });
                 return console.error(err);
             }
-            res.json({
-                success: true
-            });
-            console.log("New rank item inserted:", insertedItem);
+
+            if (rankItem !== null) {
+                // update
+                if (request.score > rankItem.score) {
+                    rankItem.score = request.score;
+                    rankItem.save((err) => {
+                        if (err) {
+                            res.json({
+                                success: false
+                            });
+                            return console.error(err);
+                        }
+
+                        res.json({
+                            success: true
+                        });
+                        console.log("Rank updated:", rankItem);
+                    });
+                } else {
+                    // not the best score of the day!
+                    res.json({
+                        success: true
+                    });
+                }
+            } else {
+                // insert
+                rank.save((err) => {
+                    if (err) {
+                        res.json({
+                            success: false
+                        });
+                        return console.error(err);
+                    }
+
+                    res.json({
+                        success: true
+                    });
+                    console.log("New rank item inserted:", rankItem);
+                });
+            }
         });
-    } else {
+    /*} else {
         console.log("!!! Request is not valid! !!!");
         res.json({
             success: false
         });
-    }
+    }*/
 });
 
 /* POST get rank. */

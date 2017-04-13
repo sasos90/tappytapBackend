@@ -63,7 +63,7 @@ router.post("/sendScore", (req, res, next) => {
                             return console.error(err);
                         }
 
-                        getRankForScore(deviceUuid, request.score, (status) => {
+                        getRankForScore(request.deviceUuid, request.score, (status) => {
                             if (status.success) {
                                 res.json({
                                     success: true,
@@ -79,7 +79,7 @@ router.post("/sendScore", (req, res, next) => {
                     });
                 } else {
                     // not the best score of the day!
-                    getRankForScore(deviceUuid, request.score, (status) => {
+                    getRankForScore(request.deviceUuid, request.score, (status) => {
                         if (status.success) {
                             res.json({
                                 success: true,

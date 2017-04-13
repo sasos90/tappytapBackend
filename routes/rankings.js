@@ -63,15 +63,33 @@ router.post("/sendScore", (req, res, next) => {
                             return console.error(err);
                         }
 
-                        res.json({
-                            success: true
+                        getRank(request.deviceUuid, (status) => {
+                            if (status.success) {
+                                res.json({
+                                    success: true,
+                                    rank: status.rank
+                                });
+                            } else {
+                                res.json({
+                                    success: false
+                                });
+                            }
                         });
                         console.log("Rank updated:", rankItem);
                     });
                 } else {
                     // not the best score of the day!
-                    res.json({
-                        success: true
+                    getRank(request.deviceUuid, (status) => {
+                        if (status.success) {
+                            res.json({
+                                success: true,
+                                rank: status.rank
+                            });
+                        } else {
+                            res.json({
+                                success: false
+                            });
+                        }
                     });
                 }
             } else {

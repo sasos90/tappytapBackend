@@ -26,6 +26,7 @@ router.post("/sendScore", (req, res, next) => {
     // how to create a storage item
     let request = req.body;
     // deviceUuid is null when accessing from browser
+    // TODO: enable request validation
     // if (request.deviceUuid !== null && requestValid(request)) {
         let rank = new Rank({
             name: request.name,
@@ -102,10 +103,19 @@ router.post("/sendScore", (req, res, next) => {
                         return console.error(err);
                     }
 
-                    res.json({
-                        success: true
+                    getRankForScore(rank.deviceUuid, rank.score, (status) => {
+                        if (status.success) {
+                            res.json({
+                                success: true,
+                                rank: status.rank
+                            });
+                        } else {
+                            res.json({
+                                success: false
+                            });
+                        }
                     });
-                    console.log("New rank item inserted:", rankItem);
+                    console.log("New rank item inserted:", rank);
                 });
             }
         });

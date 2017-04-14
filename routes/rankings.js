@@ -27,7 +27,7 @@ router.post("/sendScore", (req, res, next) => {
     let request = req.body;
     // deviceUuid is null when accessing from browser
     // TODO: enable request validation
-    // if (request.deviceUuid !== null && requestValid(request)) {
+    if (request.deviceUuid !== null && requestValid(request)) {
         let rank = new Rank({
             name: request.name,
             deviceUuid: request.deviceUuid,
@@ -119,12 +119,12 @@ router.post("/sendScore", (req, res, next) => {
                 });
             }
         });
-    /*} else {
+    } else {
         console.log("!!! Request is not valid! !!!");
         res.json({
             success: false
         });
-    }*/
+    }
 });
 
 /* POST get rank. */

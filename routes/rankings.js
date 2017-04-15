@@ -158,7 +158,7 @@ router.post("/getHighscores", (req, res, next) => {
                 _id: "$deviceUuid",
                 maxScore: { $max: "$score" },
                 maxLevel: { $max: "$levelReached" },
-                name: { $push: "$name" }
+                name: { $first: "$name" }
             }
         },
         { $limit: 10 }

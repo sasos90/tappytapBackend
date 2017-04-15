@@ -136,7 +136,9 @@ router.post("/getRank", (req, res, next) => {
         if (status.success) {
             res.json({
                 success: true,
-                rank: status.rank
+                rank: status.rank,
+                maxScore: status.maxScore,
+                maxLevel: status.maxLevel
             });
         } else {
             res.json({
@@ -216,6 +218,7 @@ let getRank = (deviceUuid, callback) => {
 
         if (rank.length > 0) {
             let maxScore = rank[0].score;
+            let maxLevel = rank[0].levelReached;
 
             // get rank
             Rank.aggregate([
@@ -242,7 +245,8 @@ let getRank = (deviceUuid, callback) => {
                 callback({
                     success: true,
                     rank: list.length + 1,
-                    maxScore: maxScore
+                    maxScore: maxScore,
+                    maxLevel: maxLevel
                 });
             });
         } else {

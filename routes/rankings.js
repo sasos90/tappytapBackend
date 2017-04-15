@@ -146,6 +146,62 @@ router.post("/getRank", (req, res, next) => {
     });
 });
 
+/* POST get all time highscores. */
+router.post("/getHighscores", (req, res, next) => {
+
+    let deviceUuid = req.body.deviceUuid;
+
+    Rank.aggregate([
+        { $sort : { score: 1 } },
+        {
+            $group: {
+                _id: "$deviceUuid",
+                maxScore: { $max: "$score" },
+                maxLevel: { $max: "$levelReached" },
+                name: { $push: "$name" }
+            }
+        },
+        { $limit: 10 }
+    ], (err, highscores) => {
+        if (err) {
+            console.log("Error occured on getting highscores!");
+            res.json({ success: false });
+            return console.error(err);
+        }
+
+        let isTop10 = false;
+        for (let rank of highscores) {
+            if (rank._id === deviceUuid) {
+                isTop10 = true;
+            }
+        }
+        if (isTop10) {
+            res.json({
+                success: true,
+                allTime: highscores,
+                userRank: null
+            });
+        } else {
+            getRank(deviceUuid, (status) => {
+                if (status.success) {
+                    res.json({
+                        success: true,
+                        allTime: highscores,
+                        userRank: {
+                            rank: status.rank,
+                            maxScore: status.maxScore
+                        }
+                    });
+                } else {
+                    res.json({
+                        success: false
+                    });
+                }
+            });
+        }
+    });
+});
+
 let getRank = (deviceUuid, callback) => {
     Rank.find({
         deviceUuid: deviceUuid
@@ -185,7 +241,8 @@ let getRank = (deviceUuid, callback) => {
                 // rank can be zero, so we add + 1
                 callback({
                     success: true,
-                    rank: list.length + 1
+                    rank: list.length + 1,
+                    maxScore: maxScore
                 });
             });
         } else {

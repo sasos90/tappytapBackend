@@ -4,6 +4,7 @@ let mongoose = require("mongoose");
 let Rank = mongoose.model("Rank");
 let md5 = require("md5");
 
+// TODO: Remove that ON PRODUCTION
 router.use((req, res, next) => {
 
     // Website you wish to allow to connect
@@ -26,7 +27,7 @@ router.post("/sendScore", (req, res, next) => {
     // how to create a storage item
     let request = req.body;
     // deviceUuid is null when accessing from browser
-    // TODO: enable request validation
+    // TODO: Enable request validation ON PRODUCTION
     if (request.deviceUuid !== null && requestValid(request)) {
         let rank = new Rank({
             name: request.name,
@@ -171,8 +172,8 @@ router.post("/getHighscores", (req, res, next) => {
 
     let deviceUuid = req.body.deviceUuid;
 
+    // TODO: Highscores are not properly sorted...
     Rank.aggregate([
-        { $sort : { score: 1 } },
         {
             $group: {
                 _id: "$deviceUuid",
@@ -181,6 +182,7 @@ router.post("/getHighscores", (req, res, next) => {
                 name: { $first: "$name" }
             }
         },
+        { $sort : { maxScore: -1 } },
         { $limit: 10 }
     ], (err, highscores) => {
         if (err) {

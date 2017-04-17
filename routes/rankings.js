@@ -147,6 +147,25 @@ router.post("/getRank", (req, res, next) => {
     });
 });
 
+/* POST get rank for sore. */
+router.post("/getRankForScore", (req, res, next) => {
+
+    let request = req.body;
+
+    getRankForScore(request.deviceUuid, request.score, (status) => {
+        if (status.success) {
+            res.json({
+                success: true,
+                rank: status.rank
+            });
+        } else {
+            res.json({
+                success: false
+            });
+        }
+    });
+});
+
 /* POST get all time highscores. */
 router.post("/getHighscores", (req, res, next) => {
 

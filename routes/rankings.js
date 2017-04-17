@@ -172,8 +172,8 @@ router.post("/getHighscores", (req, res, next) => {
 
     let deviceUuid = req.body.deviceUuid;
 
+    // TODO: Highscores are not properly sorted...
     Rank.aggregate([
-        { $sort : { score: 1 } },
         {
             $group: {
                 _id: "$deviceUuid",
@@ -182,6 +182,7 @@ router.post("/getHighscores", (req, res, next) => {
                 name: { $first: "$name" }
             }
         },
+        { $sort : { maxScore: -1 } },
         { $limit: 10 }
     ], (err, highscores) => {
         if (err) {

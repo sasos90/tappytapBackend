@@ -36,7 +36,6 @@ router.post("/sendScore", (req, res, next) => {
             timestamp: request.time
         });
         // update the row with the same timestamp and device id
-        // TODO: check if score is better then the actual stored in the database.
         Rank.findOne({
             deviceUuid: request.deviceUuid,
             timestamp: request.time
@@ -136,11 +135,88 @@ router.post("/getRank", (req, res, next) => {
         if (status.success) {
             res.json({
                 success: true,
+                rank: status.rank,
+                maxScore: status.maxScore,
+                maxLevel: status.maxLevel
+            });
+        } else {
+            res.json({
+                success: false
+            });
+        }
+    });
+});
+
+/* POST get rank for sore. */
+router.post("/getRankForScore", (req, res, next) => {
+
+    let request = req.body;
+
+    getRankForScore(request.deviceUuid, request.score, (status) => {
+        if (status.success) {
+            res.json({
+                success: true,
                 rank: status.rank
             });
         } else {
             res.json({
                 success: false
+            });
+        }
+    });
+});
+
+/* POST get all time highscores. */
+router.post("/getHighscores", (req, res, next) => {
+
+    let deviceUuid = req.body.deviceUuid;
+
+    Rank.aggregate([
+        { $sort : { score: 1 } },
+        {
+            $group: {
+                _id: "$deviceUuid",
+                maxScore: { $max: "$score" },
+                maxLevel: { $max: "$levelReached" },
+                name: { $first: "$name" }
+            }
+        },
+        { $limit: 10 }
+    ], (err, highscores) => {
+        if (err) {
+            console.log("Error occured on getting highscores!");
+            res.json({ success: false });
+            return console.error(err);
+        }
+
+        let isTop10 = false;
+        for (let rank of highscores) {
+            if (rank._id === deviceUuid) {
+                isTop10 = true;
+            }
+        }
+        if (isTop10) {
+            res.json({
+                success: true,
+                allTime: highscores,
+                userRank: null
+            });
+        } else {
+            getRank(deviceUuid, (status) => {
+                if (status.success) {
+                    res.json({
+                        success: true,
+                        allTime: highscores,
+                        userRank: {
+                            rank: status.rank,
+                            maxScore: status.maxScore
+                        }
+                    });
+                } else {
+                    res.json({
+                        success: false
+                    });
+                }
             });
         }
     });
@@ -160,6 +236,7 @@ let getRank = (deviceUuid, callback) => {
 
         if (rank.length > 0) {
             let maxScore = rank[0].score;
+            let maxLevel = rank[0].levelReached;
 
             // get rank
             Rank.aggregate([
@@ -185,7 +262,9 @@ let getRank = (deviceUuid, callback) => {
                 // rank can be zero, so we add + 1
                 callback({
                     success: true,
-                    rank: list.length + 1
+                    rank: list.length + 1,
+                    maxScore: maxScore,
+                    maxLevel: maxLevel
                 });
             });
         } else {

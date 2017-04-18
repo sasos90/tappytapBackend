@@ -261,6 +261,9 @@ let getRank = (deviceUuid, callback) => {
                     return console.error(err);
                 }
 
+                console.log("GET RANK");
+                console.log("Max Score: " + maxScore, "Ranks before: ", list);
+
                 // rank can be zero, so we add + 1
                 callback({
                     success: true,
@@ -284,9 +287,6 @@ let getRankForScore = (deviceUuid, score, callback) => {
             $match: {
                 score: {
                     $gt: score
-                },
-                deviceUuid: {
-                    $ne: deviceUuid
                 }
             }
         },
@@ -300,6 +300,9 @@ let getRankForScore = (deviceUuid, score, callback) => {
             callback({ success: false });
             return console.error(err);
         }
+
+        console.log("GET RANK FOR SCORE");
+        console.log("Ranks before: ", list);
 
         // rank can be zero, so we add + 1
         callback({

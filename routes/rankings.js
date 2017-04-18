@@ -261,7 +261,7 @@ let getRank = (deviceUuid, callback) => {
                     return console.error(err);
                 }
 
-                console.log("GET RANK");
+                console.log("GET RANK -> " + deviceUuid);
                 console.log("Max Score: " + maxScore, "Ranks before: ", list);
 
                 // rank can be zero, so we add + 1

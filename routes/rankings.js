@@ -273,7 +273,7 @@ let getRank = (deviceUuid, callback) => {
                 });
             });
         } else {
-            console.log("No rank for you yet!");
+            console.log("No rank for you yet!", "deviceUuid: " + deviceUuid);
             callback({ success: false });
         }
     });
